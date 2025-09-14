@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>QC Library Digital Signage - Admin Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb', // blue primary
+                        secondary: '#6b7280', // gray for text
+                        accent: '#eab308',
+                    },
+                    fontFamily: {
+                        montserrat: ['Montserrat', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .loader {
+            width: 45px;
+            height: 40px;
+            background: linear-gradient(#fff calc(1*100%/6),#ce0b22 0 calc(3*100%/6),#0000 0),
+                        linear-gradient(#fff calc(2*100%/6),#0139a5 0 calc(4*100%/6),#0000 0),
+                        linear-gradient(#fff calc(3*100%/6),#facf00 0 calc(5*100%/6),#0000 0);
+            background-size: 10px 400%;
+            background-repeat: no-repeat;
+            animation: matrix 1s infinite linear;
+        }
+
+        @keyframes matrix {
+            0% {
+                background-position: 0% 100%, 50% 100%, 100% 100%
+            }
+
+            100% {
+                background-position: 0% 0%, 50% 0%, 100% 0%
+            }
+        }
+    </style>
+</head>
+<body class="relative min-h-screen flex items-center justify-center font-montserrat">
+    <img src="../assets/wallpa.png" alt="Background" class="absolute inset-0 w-full h-full object-cover filter blur-sm" />
+    <div class="relative bg-white p-8 w-full max-w-sm text-center z-10 rounded-lg shadow-lg">
+        <div class="mb-6">
+                <div class="mx-auto mb-2 w-40 h-28 rounded-md overflow-hidden">
+                    <img src="../assets/logoo.png" alt="QC Library Logo" class="w-full h-full object-cover" />
+                </div>
+            <h1 class="text-xl font-bold font-montserrat mt-6">QUEZON CITY PUBLIC LIBRARY</h1>
+            <p class="text-sm font-montserrat">Digital Signage - Admin Portal Login</p>
+        </div>
+        <form id="login-form" class="space-y-4 text-left font-montserrat">
+            <label for="adminName" class="block text-sm font-bold">Admin Name</label>
+            <input type="text" id="adminName" name="adminName" required placeholder="Enter admin name..." class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary font-montserrat" />
+            
+            <label for="district" class="block text-sm font-bold">Select District</label>
+            <select id="district" name="district" required class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary font-montserrat">
+                <option value="" disabled selected>Choose your district...</option>
+                <option value="Main Branch">Main Branch</option>
+                <option value="District 1">District 1</option>
+                <option value="District 2">District 2</option>
+                <option value="District 3">District 3</option>
+                <option value="District 4">District 4</option>
+                <option value="District 5">District 5</option>
+                <option value="District 6">District 6</option>
+            </select>
+
+            <label for="branch" class="block text-sm font-bold mt-4" id="branch-label">Select Branch</label>
+            <select id="branch" name="branch" required class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary font-montserrat" disabled>
+                <option value="" disabled selected>Choose your branch...</option>
+            </select>
+            <button type="submit" class="w-full bg-primary text-white py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary font-montserrat">LOGIN</button>
+        </form>
+        <div class="mt-4 text-sm">
+            <!-- Removed View Live Signage Display link as requested -->
+        </div>
+    </div>
+
+        <script>
+            const branchesByDistrict = {
+                "District 1": [
+                    "District Library - Project 8 Branch",
+                    "Nayong Kanluran Branch",
+                    "Bagong Pag-Asa Branch (Under Renovation)",
+                    "Balingasa Branch",
+                    "Masambong Branch",
+                    "Veterans Library/Project 7 Branch"
+                ],
+                "District 2": [
+                    "District Library - Payatas Lupang Pangako Branch",
+                    "Payatas Landfill Branch (Under Renovation)",
+                    "Bagong Silangan Branch",
+                    "Holy Spirit Branch"
+                ],
+                "District 3": [
+                    "District Library - Greater Project 4 Branch",
+                    "Escopa 2 Branch",
+                    "Escopa 3 Branch (Under Renovation)",
+                    "Tagumpay Branch",
+                    "Libis Branch",
+                    "Matandang Balara Branch"
+                ],
+                "District 4": [
+                    "District Library - Cubao Branch",
+                    "Krus Na Ligas Branch",
+                    "Roxas Branch",
+                    "San Isidro-Galas Branch",
+                    "UP Pook Amorsolo Branch",
+                    "UP Pook Dagohoy Branch",
+                    "Camp Karingal Women's Dormitory Branch"
+                ],
+                "District 5": [
+                    "District Library - Lagro Branch",
+                    "Novaliches Branch (Under Renovation)",
+                    "North Fairview Branch"
+                ],
+                "District 6": [
+                    "District Library - Pasong Tamo Branch",
+                    "Talipapa Branch",
+                    "Sagana Homes 1 Branch"
+                ]
+            };
+
+            const districtSelect = document.getElementById('district');
+            const branchSelect = document.getElementById('branch');
+
+            districtSelect.addEventListener('change', function() {
+                const selectedDistrict = this.value;
+                if (selectedDistrict === 'Main Branch') {
+                    branchSelect.style.display = 'none';
+                    document.getElementById('branch-label').style.display = 'none';
+                    branchSelect.disabled = true;
+                } else {
+                    branchSelect.style.display = 'block';
+                    document.getElementById('branch-label').style.display = 'block';
+                    branchSelect.innerHTML = '<option value="" disabled selected>Choose your branch...</option>';
+                    if (selectedDistrict && branchesByDistrict[selectedDistrict]) {
+                        branchesByDistrict[selectedDistrict].forEach(branch => {
+                            const option = document.createElement('option');
+                            option.value = branch;
+                            option.textContent = branch;
+                            branchSelect.appendChild(option);
+                        });
+                        branchSelect.disabled = false;
+                    } else {
+                        branchSelect.disabled = true;
+                    }
+                }
+            });
+
+            document.getElementById('login-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const adminName = document.getElementById('adminName').value.trim();
+                const district = districtSelect.value;
+                const branch = branchSelect.value;
+
+            if (adminName && district && (district === 'Main Branch' || (branch && branch !== ""))) {
+                localStorage.setItem('loggedIn', 'true');
+                localStorage.setItem('adminName', adminName);
+                localStorage.setItem('district', district);
+                localStorage.setItem('branch', district === 'Main Branch' ? 'Main Branch' : branch);
+
+                // Show 2FA UI instead of redirecting immediately
+                showTwoFactorAuthUI();
+
+            } else {
+                alert('Please enter your name and select district. If not Main Branch, select branch as well.');
+            }
+            });
+
+        function showTwoFactorAuthUI() {
+            // Clear the form container
+            const container = document.querySelector('.bg-white');
+            container.innerHTML = '';
+
+            // Create heading
+            const heading = document.createElement('h2');
+            heading.textContent = 'Two-Factor Authentication';
+            heading.className = 'text-xl font-bold text-gray-900 font-montserrat mb-4 text-center';
+            container.appendChild(heading);
+
+            // Create instruction text
+            const instruction = document.createElement('p');
+            instruction.textContent = 'Select a method to receive your OTP and enter the 6-digit code.';
+            instruction.className = 'text-sm text-gray-700 font-montserrat mb-6 text-center';
+            container.appendChild(instruction);
+
+            // Create method selection (imitating Google's UI with tabs)
+            const methodContainer = document.createElement('div');
+            methodContainer.className = 'flex justify-center mb-6 border border-gray-300 rounded-md overflow-hidden';
+
+            const emailBtn = document.createElement('button');
+            emailBtn.textContent = 'Email';
+            emailBtn.className = 'flex-1 py-3 px-4 bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary font-montserrat border-r border-gray-300 border-b-2 border-primary';
+            emailBtn.addEventListener('click', () => {
+                selectedMethod = 'Email';
+                updateMethodSelection(emailBtn, phoneBtn);
+            });
+
+            const phoneBtn = document.createElement('button');
+            phoneBtn.textContent = 'Phone';
+            phoneBtn.className = 'flex-1 py-3 px-4 bg-gray-100 text-gray-500 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary font-montserrat border-b border-gray-300';
+            phoneBtn.addEventListener('click', () => {
+                selectedMethod = 'Phone';
+                updateMethodSelection(phoneBtn, emailBtn);
+            });
+
+            methodContainer.appendChild(emailBtn);
+            methodContainer.appendChild(phoneBtn);
+            container.appendChild(methodContainer);
+
+            // Default selected method
+            let selectedMethod = 'Email';
+            updateMethodSelection(emailBtn, phoneBtn);
+
+            // Create SEND OTP button
+            const sendOtpBtn = document.createElement('button');
+            sendOtpBtn.textContent = 'Send OTP';
+            sendOtpBtn.className = 'w-full bg-primary text-white py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary font-montserrat mb-6';
+            sendOtpBtn.addEventListener('click', () => {
+                alert(`OTP sent to your ${selectedMethod.toLowerCase()}.`);
+                // Enable resend button after sending
+                resendOtpBtn.disabled = false;
+                resendOtpBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            });
+            container.appendChild(sendOtpBtn);
+
+            // Create OTP input container
+            const otpContainer = document.createElement('div');
+            otpContainer.className = 'flex justify-center space-x-2 mb-6';
+
+            // Create 6 input boxes for OTP digits
+            const otpInputs = [];
+            for (let i = 0; i < 6; i++) {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.maxLength = 1;
+                input.className = 'w-10 h-10 text-center border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary font-montserrat text-lg';
+                input.inputMode = 'numeric';
+                input.autocomplete = 'one-time-code';
+                input.addEventListener('input', (e) => {
+                    if (e.target.value.length === 1 && i < 5) {
+                        otpInputs[i + 1].focus();
+                    }
+                });
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && !e.target.value && i > 0) {
+                        otpInputs[i - 1].focus();
+                    }
+                });
+                otpInputs.push(input);
+                otpContainer.appendChild(input);
+            }
+            container.appendChild(otpContainer);
+
+            // Create RESEND OTP button
+            const resendOtpBtn = document.createElement('button');
+            resendOtpBtn.textContent = 'Resend OTP';
+            resendOtpBtn.className = 'w-full bg-gray-300 text-gray-500 py-2 rounded hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 font-montserrat mb-4 opacity-50 cursor-not-allowed';
+            resendOtpBtn.disabled = true;
+            resendOtpBtn.addEventListener('click', () => {
+                alert(`OTP resent to your ${selectedMethod.toLowerCase()}.`);
+            });
+            container.appendChild(resendOtpBtn);
+
+            // Create submit button
+            const submitBtn = document.createElement('button');
+            submitBtn.textContent = 'Verify OTP';
+            submitBtn.className = 'w-full bg-primary text-white py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary font-montserrat';
+            submitBtn.addEventListener('click', () => {
+                const otpValue = otpInputs.map(input => input.value).join('');
+                if (otpValue.length < 6 || !/^\d{6}$/.test(otpValue)) {
+                    alert('Please enter a valid 6-digit OTP.');
+                    return;
+                }
+                // Show loader while verifying
+                container.innerHTML = '';
+                container.classList.remove('bg-white', 'shadow-lg');
+                // Remove black background for loader visibility as requested
+                // container.classList.add('bg-black', 'bg-opacity-50');
+                const bgImg = document.querySelector('img');
+                bgImg.style.display = 'none';
+                document.body.style.backgroundColor = 'white';
+                const loader = document.createElement('div');
+                loader.className = 'loader mx-auto';
+                container.appendChild(loader);
+                // Simulate verification delay and redirect
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 5000);
+            });
+            container.appendChild(submitBtn);
+        }
+
+        function updateMethodSelection(selectedBtn, otherBtn) {
+            selectedBtn.classList.remove('bg-gray-100', 'text-gray-500', 'border-b', 'border-gray-300');
+            selectedBtn.classList.add('bg-white', 'text-gray-700', 'border-b-2', 'border-primary');
+            otherBtn.classList.remove('bg-white', 'text-gray-700', 'border-b-2', 'border-primary');
+            otherBtn.classList.add('bg-gray-100', 'text-gray-500', 'border-b', 'border-gray-300');
+        }
+    </script>
+</body>
+</html>
