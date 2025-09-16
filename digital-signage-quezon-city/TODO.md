@@ -1,0 +1,9 @@
+- [x] Add editingIndex variable
+- [x] Modify loadFooters to include edit and delete buttons
+- [x] Add event listeners for edit and delete in footerMsgsList
+- [x] Modify submit handler to handle editing
+- [x] Modify cancel handler to reset editing state
+- [x] Modify loadAnnouncements to include edit button
+- [x] Modify announcement submit handler to handle editing
+- [x] Add event listeners for edit and delete announcements
+- [x] Update cancel handler for announcements
