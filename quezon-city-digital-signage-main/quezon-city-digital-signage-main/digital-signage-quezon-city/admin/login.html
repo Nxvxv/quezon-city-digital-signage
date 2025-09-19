@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>QC Library Digital Signage - Admin Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="login.css" />
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb', // blue primary
+                        secondary: '#6b7280', // gray for text
+                        accent: '#eab308',
+                    },
+                    fontFamily: {
+                        montserrat: ['Montserrat', 'sans-serif']
+                    }
+                }
+            }
+        };
+    </script>
+</head>
+<body class="relative min-h-screen flex items-center justify-center font-montserrat">
+    <img src="../assets/wallpa.png" alt="Background" class="absolute inset-0 w-full h-full object-cover filter blur-sm" />
+    <div class="relative bg-white p-8 w-full max-w-sm text-center z-10 rounded-lg shadow-lg">
+        <div class="mb-6">
+            <div class="mx-auto mb-2 w-40 h-28 rounded-md overflow-hidden">
+                <img src="../assets/logoo.png" alt="QC Library Logo" class="w-full h-full object-cover" />
+            </div>
+            <h1 class="text-xl font-bold font-montserrat mt-6">QUEZON CITY PUBLIC LIBRARY</h1>
+            <p class="text-sm font-montserrat">Digital Signage - Admin Portal Login</p>
+        </div>
+        <form id="login-form" class="space-y-4 text-left font-montserrat">
+            <label for="adminName" class="block text-sm font-bold">Admin Name</label>
+            <input type="text" id="adminName" name="adminName" required placeholder="Enter admin name..." class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary font-montserrat" />
+            <label for="district" class="block text-sm font-bold">Select District</label>
+            <select id="district" name="district" required class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary font-montserrat">
+                <option value="" disabled selected>Choose your district...</option>
+                <option value="Main Branch">Main Branch</option>
+                <option value="District 1">District 1</option>
+                <option value="District 2">District 2</option>
+                <option value="District 3">District 3</option>
+                <option value="District 4">District 4</option>
+                <option value="District 5">District 5</option>
+                <option value="District 6">District 6</option>
+            </select>
+            <label for="branch" class="block text-sm font-bold mt-4" id="branch-label">Select Branch</label>
+            <select id="branch" name="branch" required class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary font-montserrat" disabled>
+                <option value="" disabled selected>Choose your branch...</option>
+            </select>
+            <button type="submit" class="w-full bg-primary text-white py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary font-montserrat">LOGIN</button>
+        </form>
+        <div class="mt-4 text-sm">
+            <!-- Removed View Live Signage Display link as requested -->
+        </div>
+    </div>
+    <script>
+        // Data structure for branches by district
+        const BRANCHES_BY_DISTRICT = {
+            "District 1": [
+                "District Library - Project 8 Branch",
+                "Nayong Kanluran Branch",
+                "Bagong Pag-Asa Branch (Under Renovation)",
+                "Balingasa Branch",
+                "Masambong Branch",
+                "Veterans Library/Project 7 Branch"
+            ],
+            "District 2": [
+                "District Library - Payatas Lupang Pangako Branch",
+                "Payatas Landfill Branch (Under Renovation)",
+                "Bagong Silangan Branch",
+                "Holy Spirit Branch"
+            ],
+            "District 3": [
+                "District Library - Greater Project 4 Branch",
+                "Escopa 2 Branch",
+                "Escopa 3 Branch (Under Renovation)",
+                "Tagumpay Branch",
+                "Libis Branch",
+                "Matandang Balara Branch"
+            ],
+            "District 4": [
+                "District Library - Cubao Branch",
+                "Krus Na Ligas Branch",
+                "Roxas Branch",
+                "San Isidro-Galas Branch",
+                "UP Pook Amorsolo Branch",
+                "UP Pook Dagohoy Branch",
+                "Camp Karingal Women's Dormitory Branch"
+            ],
+            "District 5": [
+                "District Library - Lagro Branch",
+                "Novaliches Branch (Under Renovation)",
+                "North Fairview Branch"
+            ],
+            "District 6": [
+                "District Library - Pasong Tamo Branch",
+                "Talipapa Branch",
+                "Sagana Homes 1 Branch"
+            ]
+        };
+
+        // DOM elements
+        const districtSelect = document.getElementById('district');
+        const branchSelect = document.getElementById('branch');
+        const branchLabel = document.getElementById('branch-label');
+
+        // Initialize branch selection visibility
+        function initializeBranchSelection() {
+            branchSelect.style.display = 'none';
+            branchLabel.style.display = 'none';
+        }
+
+        // Handle district selection change
+        function handleDistrictChange() {
+            const selectedDistrict = districtSelect.value;
+            if (selectedDistrict === 'Main Branch') {
+                hideBranchSelection();
+                return;
+            }
+            showBranchSelection(selectedDistrict);
+        }
+
+        // Hide branch selection for Main Branch
+        function hideBranchSelection() {
+            branchSelect.style.display = 'none';
+            branchLabel.style.display = 'none';
+            branchSelect.disabled = true;
+        }
+
+        // Show and populate branch selection
+        function showBranchSelection(selectedDistrict) {
+            branchSelect.style.display = 'block';
+            branchLabel.style.display = 'block';
+            branchSelect.innerHTML = '<option value="" disabled selected>Choose your branch...</option>';
+            const branches = BRANCHES_BY_DISTRICT[selectedDistrict];
+            if (!branches) {
+                branchSelect.disabled = true;
+                return;
+            }
+            populateBranchOptions(branches);
+            branchSelect.disabled = false;
+        }
+
+        // Populate branch options
+        function populateBranchOptions(branches) {
+            branches.forEach(branch => {
+                const option = document.createElement('option');
+                option.value = branch;
+                option.textContent = branch;
+                branchSelect.appendChild(option);
+            });
+        }
+
+        // Validate login form
+        function validateLoginForm(adminName, district, branch) {
+            if (!adminName || !district) {
+                return false;
+            }
+            if (district === 'Main Branch') {
+                return true;
+            }
+            return branch && branch !== "";
+        }
+
+        // Handle login form submission
+        function handleLoginSubmit(event) {
+            event.preventDefault();
+            const adminName = document.getElementById('adminName').value.trim();
+            const district = districtSelect.value;
+            const branch = branchSelect.value;
+            if (!validateLoginForm(adminName, district, branch)) {
+                alert('Please enter your name and select district. If not Main Branch, select branch as well.');
+                return;
+            }
+            saveLoginData(adminName, district, branch);
+            showTwoFactorAuthUI();
+        }
+
+        // Save login data to localStorage
+        function saveLoginData(adminName, district, branch) {
+            localStorage.setItem('loggedIn', 'true');
+            localStorage.setItem('adminName', adminName);
+            localStorage.setItem('district', district);
+            localStorage.setItem('branch', district === 'Main Branch' ? 'Main Branch' : branch);
+        }
+
+        // Show Two-Factor Authentication UI
+        function showTwoFactorAuthUI() {
+            const container = document.querySelector('.bg-white');
+            container.innerHTML = '';
+            appendHeading(container);
+            appendInstruction(container);
+            const { methodContainer, emailBtn, phoneBtn, selectedMethod } = createMethodSelection(container);
+            const sendOtpBtn = createSendOtpButton(container, selectedMethod);
+            const otpInputs = createOtpInputs(container);
+            const resendOtpBtn = createResendOtpButton(container, selectedMethod);
+            createVerifyButton(container, otpInputs);
+            // Event listeners for method selection
+            emailBtn.addEventListener('click', () => updateMethodSelection(emailBtn, phoneBtn, 'Email'));
+            phoneBtn.addEventListener('click', () => updateMethodSelection(phoneBtn, emailBtn, 'Phone'));
+        }
+
+        // Append heading to container
+        function appendHeading(container) {
+            const heading = document.createElement('h2');
+            heading.textContent = 'Two-Factor Authentication';
+            heading.className = 'text-xl font-bold text-gray-900 font-montserrat mb-4 text-center';
+            container.appendChild(heading);
+        }
+
+        // Append instruction text
+        function appendInstruction(container) {
+            const instruction = document.createElement('p');
+            instruction.textContent = 'Select a method to receive your OTP and enter the 6-digit code.';
+            instruction.className = 'text-sm text-gray-700 font-montserrat mb-6 text-center';
+            container.appendChild(instruction);
+        }
+
+        // Create method selection UI
+        function createMethodSelection(container) {
+            const methodContainer = document.createElement('div');
+            methodContainer.className = 'flex justify-center mb-6 border border-gray-300 rounded-md overflow-hidden';
+            const emailBtn = createMethodButton('Email', true);
+            const phoneBtn = createMethodButton('Phone', false);
+            methodContainer.appendChild(emailBtn);
+            methodContainer.appendChild(phoneBtn);
+            container.appendChild(methodContainer);
+            const selectedMethod = 'Email';
+            updateMethodSelection(emailBtn, phoneBtn, selectedMethod);
+            return { methodContainer, emailBtn, phoneBtn, selectedMethod };
+        }
+
+        // Create individual method button
+        function createMethodButton(text, isSelected) {
+            const btn = document.createElement('button');
+            btn.textContent = text;
+            btn.className = isSelected
+                ? 'flex-1 py-3 px-4 bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary font-montserrat border-r border-gray-300 border-b-2 border-primary'
+                : 'flex-1 py-3 px-4 bg-gray-100 text-gray-500 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary font-montserrat border-b border-gray-300';
+            return btn;
+        }
+
+        // Create Send OTP button
+        function createSendOtpButton(container, selectedMethod) {
+            const sendOtpBtn = document.createElement('button');
+            sendOtpBtn.textContent = 'Send OTP';
+            sendOtpBtn.className = 'w-full bg-primary text-white py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary font-montserrat mb-6';
+            container.appendChild(sendOtpBtn);
+            sendOtpBtn.addEventListener('click', () => {
+                alert(`OTP sent to your ${selectedMethod.toLowerCase()}.`);
+                // Enable resend button after sending
+                const resendBtn = container.querySelector('.resend-btn');
+                if (resendBtn) {
+                    resendBtn.disabled = false;
+                    resendBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            });
+            return sendOtpBtn;
+        }
+
+        // Create OTP input fields
+        function createOtpInputs(container) {
+            const otpContainer = document.createElement('div');
+            otpContainer.className = 'flex justify-center space-x-2 mb-6';
+            const otpInputs = [];
+            for (let i = 0; i < 6; i++) {
+                const input = createOtpInput(otpInputs, i);
+                otpInputs.push(input);
+                otpContainer.appendChild(input);
+            }
+            container.appendChild(otpContainer);
+            return otpInputs;
+        }
+
+        // Create single OTP input
+        function createOtpInput(otpInputs, index) {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.maxLength = 1;
+            input.className = 'w-10 h-10 text-center border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary font-montserrat text-lg';
+            input.inputMode = 'numeric';
+            input.autocomplete = 'one-time-code';
+            input.addEventListener('input', (e) => {
+                if (e.target.value.length === 1 && index < 5) {
+                    otpInputs[index + 1].focus();
+                }
+            });
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                    otpInputs[index - 1].focus();
+                }
+            });
+            return input;
+        }
+
+        // Create Resend OTP button
+        function createResendOtpButton(container, selectedMethod) {
+            const resendOtpBtn = document.createElement('button');
+            resendOtpBtn.textContent = 'Resend OTP';
+            resendOtpBtn.className = 'resend-btn w-full bg-gray-300 text-gray-500 py-2 rounded hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 font-montserrat mb-4 opacity-50 cursor-not-allowed';
+            resendOtpBtn.disabled = true;
+            container.appendChild(resendOtpBtn);
+            resendOtpBtn.addEventListener('click', () => {
+                alert(`OTP resent to your ${selectedMethod.toLowerCase()}.`);
+            });
+            return resendOtpBtn;
+        }
+
+        // Create Verify OTP button
+        function createVerifyButton(container, otpInputs) {
+            const submitBtn = document.createElement('button');
+            submitBtn.textContent = 'Verify OTP';
+            submitBtn.className = 'w-full bg-primary text-white py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary font-montserrat';
+            container.appendChild(submitBtn);
+            submitBtn.addEventListener('click', () => {
+                const otpValue = otpInputs.map(input => input.value).join('');
+                if (!isValidOtp(otpValue)) {
+                    alert('Please enter a valid 6-digit OTP.');
+                    return;
+                }
+                showVerificationLoader(container);
+            });
+        }
+
+        // Validate OTP
+        function isValidOtp(otp) {
+            return otp.length === 6 && /^\d{6}$/.test(otp);
+        }
+
+        // Show loader during verification
+        function showVerificationLoader(container) {
+            container.innerHTML = '';
+            container.classList.remove('bg-white', 'shadow-lg');
+            const bgImg = document.querySelector('img');
+            bgImg.style.display = 'none';
+            document.body.style.backgroundColor = 'white';
+            const loader = document.createElement('div');
+            loader.className = 'loader mx-auto';
+            container.appendChild(loader);
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 5000);
+        }
+
+        // Update method selection UI
+        function updateMethodSelection(selectedBtn, otherBtn, method) {
+            selectedBtn.classList.remove('bg-gray-100', 'text-gray-500', 'border-b', 'border-gray-300');
+            selectedBtn.classList.add('bg-white', 'text-gray-700', 'border-b-2', 'border-primary');
+            otherBtn.classList.remove('bg-white', 'text-gray-700', 'border-b-2', 'border-primary');
+            otherBtn.classList.add('bg-gray-100', 'text-gray-500', 'border-b', 'border-gray-300');
+        }
+
+        // Initialize event listeners
+        function initializeEventListeners() {
+            districtSelect.addEventListener('change', handleDistrictChange);
+            document.getElementById('login-form').addEventListener('submit', handleLoginSubmit);
+        }
+
+        // Initialize the page
+        initializeBranchSelection();
+        initializeEventListeners();
+    </script>
+</body>
+</html>
